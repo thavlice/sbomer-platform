@@ -1,4 +1,4 @@
-{{- if .Values.global.devProfile }}
+{{- if .Values.global.includeKafka }}
 apiVersion: v1
 kind: Service
 metadata:

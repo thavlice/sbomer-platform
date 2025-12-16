@@ -1,0 +1,65 @@
+{{- if .Values.global.includeApiGateway }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-gateway-config
+  labels:
+    app: sbomer-gateway
+    release: {{ .Release.Name }}
+data:
+  nginx.conf: |
+    events {
+        worker_connections 1024;
+    }
+    
+    http {
+        include       mime.types;
+        default_type  application/octet-stream;
+        sendfile        on;
+        keepalive_timeout  65;
+
+        server {
+            listen 8080;
+            server_name localhost;
+
+            # --- MANIFEST STORAGE (Read-Only Downloads) ---
+            location /api/v1/storage/content/ {
+                limit_except GET {
+                    deny all;
+                }
+                proxy_pass http://{{ .Release.Name }}-manifest-storage-service-chart:8080;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+            }
+
+            # --- SBOM SERVICE (Full API Access) ---
+            location /api/v1/ {
+                proxy_pass http://{{ .Release.Name }}-sbom-service-chart:8080;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            }
+            
+            # --- QUARKUS ENDPOINTS FOR SBOM SERVICE (Swagger, OpenAPI, Health) ---
+            # Swagger UI
+            location /q/swagger-ui {
+                 proxy_pass http://{{ .Release.Name }}-sbom-service-chart:8080;
+            }
+
+            # OpenAPI Schema (REQUIRED for Swagger UI to load data)
+            location /q/openapi {
+                 proxy_pass http://{{ .Release.Name }}-sbom-service-chart:8080;
+            }
+
+            # 3. Health
+            location /q/health {
+                 proxy_pass http://{{ .Release.Name }}-sbom-service-chart:8080;
+            }
+
+            # Block everything else
+            location / {
+                return 403;
+            }
+        }
+    }
+{{- end }}

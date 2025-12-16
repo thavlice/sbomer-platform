@@ -1,12 +1,12 @@
 dependencies:
 - name: manifest-storage-service-chart
   repository: oci://quay.io/sbomer
-  version: 0.1.5
+  version: 0.1.6
 - name: sbom-service-chart
   repository: oci://quay.io/sbomer
   version: 0.1.3
 - name: syft-generator-chart
   repository: oci://quay.io/sbomer
   version: 0.1.4
-digest: sha256:a06232182c1e80d066ad404b892d674f574ce8daac1b8f73758b59fe68ae5180
-generated: "2025-12-15T16:42:23.728289+01:00"
+digest: sha256:18ef82f85a185e1628aa0c06bcf1d02924bda6cf3cc8cd65f4a5103e30022f99
+generated: "2025-12-16T10:52:09.357873+01:00"

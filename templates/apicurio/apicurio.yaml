@@ -1,4 +1,4 @@
-{{- if .Values.global.devProfile }}
+{{- if .Values.global.includeApicurio }}
 apiVersion: v1
 kind: Service
 metadata:
